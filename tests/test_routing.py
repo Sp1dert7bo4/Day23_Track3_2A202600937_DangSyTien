@@ -40,11 +40,11 @@ def test_route_after_classify_unknown_defaults():
 
 
 def test_route_after_approval_approved():
-    assert route_after_approval({"approval": {"approved": True}}) == "tool"
+    assert route_after_approval({"approval": {"approved": True}}) == "answer"
 
 
 def test_route_after_approval_rejected():
-    assert route_after_approval({"approval": {"approved": False}}) == "clarify"
+    assert route_after_approval({"approval": {"approved": False}}) == "finalize"
 
 
 def test_route_after_retry_within_limit():

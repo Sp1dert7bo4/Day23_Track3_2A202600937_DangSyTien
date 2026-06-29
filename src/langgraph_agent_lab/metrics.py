@@ -11,50 +11,54 @@ from pydantic import BaseModel, Field
 
 
 class ScenarioMetric(BaseModel):
-    scenario_id: str
-    success: bool
+    id: str
+    query: str
     expected_route: str
     actual_route: str | None = None
-    nodes_visited: int = 0
-    retry_count: int = 0
-    interrupt_count: int = 0
-    approval_required: bool = False
-    approval_observed: bool = False
-    latency_ms: int = 0
+    passed: bool
+    attempts: int = 0
+    hitl_triggered: bool = False
+    dead_lettered: bool = False
+    final_answer_exists: bool = False
     errors: list[str] = Field(default_factory=list)
 
 
 class MetricsReport(BaseModel):
     total_scenarios: int
-    success_rate: float
-    avg_nodes_visited: float
-    total_retries: int
-    total_interrupts: int
-    resume_success: bool = False
-    scenario_metrics: list[ScenarioMetric]
+    passed_routes: int
+    failed_routes: int
+    route_accuracy: float
+    per_scenario: list[ScenarioMetric]
+    route_counts: dict[str, int]
+    retry_count: int
+    dead_letter_count: int
+    approval_count: int
 
 
 def metric_from_state(state: dict[str, Any], expected_route: str, approval_required: bool) -> ScenarioMetric:
     events = state.get("events", []) or []
     errors = state.get("errors", []) or []
     actual_route = state.get("route")
-    approval = state.get("approval")
+    
     nodes = [event.get("node", "unknown") for event in events]
-    retry_count = sum(1 for node in nodes if node == "retry")
-    interrupt_count = sum(1 for node in nodes if node == "approval")
-    success = actual_route == expected_route and bool(state.get("final_answer") or state.get("pending_question"))
-    if approval_required:
-        success = success and approval is not None
+    attempts = sum(1 for node in nodes if node == "retry_or_fallback_node")
+    hitl_triggered = state.get("hitl_triggered", False)
+    
+    dead_lettered = "dead_letter" in nodes or "dead_letter_node" in nodes
+    final_answer_exists = bool(state.get("final_answer"))
+    
+    passed = (actual_route == expected_route) and final_answer_exists
+    
     return ScenarioMetric(
-        scenario_id=str(state.get("scenario_id", "unknown")),
-        success=success,
+        id=str(state.get("scenario_id", "unknown")),
+        query=state.get("query", ""),
         expected_route=expected_route,
         actual_route=actual_route,
-        nodes_visited=len(nodes),
-        retry_count=retry_count,
-        interrupt_count=interrupt_count,
-        approval_required=approval_required,
-        approval_observed=approval is not None,
+        passed=passed,
+        attempts=attempts,
+        hitl_triggered=hitl_triggered,
+        dead_lettered=dead_lettered,
+        final_answer_exists=final_answer_exists,
         errors=list(errors),
     )
 
@@ -62,14 +66,31 @@ def metric_from_state(state: dict[str, Any], expected_route: str, approval_requi
 def summarize_metrics(items: list[ScenarioMetric]) -> MetricsReport:
     if not items:
         raise ValueError("No scenario metrics to summarize")
+    
+    total = len(items)
+    passed_routes = sum(1 for item in items if item.passed)
+    failed_routes = total - passed_routes
+    route_accuracy = passed_routes / total if total > 0 else 0.0
+    
+    route_counts = {}
+    for item in items:
+        route = item.actual_route or "unknown"
+        route_counts[route] = route_counts.get(route, 0) + 1
+        
+    retry_count = sum(item.attempts for item in items)
+    dead_letter_count = sum(1 for item in items if item.dead_lettered)
+    approval_count = sum(1 for item in items if item.hitl_triggered)
+    
     return MetricsReport(
-        total_scenarios=len(items),
-        success_rate=sum(1 for item in items if item.success) / len(items),
-        avg_nodes_visited=mean(item.nodes_visited for item in items),
-        total_retries=sum(item.retry_count for item in items),
-        total_interrupts=sum(item.interrupt_count for item in items),
-        resume_success=False,
-        scenario_metrics=items,
+        total_scenarios=total,
+        passed_routes=passed_routes,
+        failed_routes=failed_routes,
+        route_accuracy=route_accuracy,
+        per_scenario=items,
+        route_counts=route_counts,
+        retry_count=retry_count,
+        dead_letter_count=dead_letter_count,
+        approval_count=approval_count,
     )
 
 

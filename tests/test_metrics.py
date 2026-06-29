@@ -12,8 +12,8 @@ def test_metric_from_state_success():
         "approval": None,
     }
     metric = metric_from_state(state, expected_route="simple", approval_required=False)
-    assert metric.success is True
-    assert metric.nodes_visited == 2
+    assert metric.passed is True
+    assert metric.attempts == 0
 
 
 def test_metric_from_state_route_mismatch():
@@ -26,7 +26,7 @@ def test_metric_from_state_route_mismatch():
         "approval": None,
     }
     metric = metric_from_state(state, expected_route="simple", approval_required=False)
-    assert metric.success is False
+    assert metric.passed is False
 
 
 def test_summarize_metrics():
@@ -42,4 +42,4 @@ def test_summarize_metrics():
     )
     report = summarize_metrics([m1, m2])
     assert report.total_scenarios == 2
-    assert 0 <= report.success_rate <= 1
+    assert 0 <= report.route_accuracy <= 1

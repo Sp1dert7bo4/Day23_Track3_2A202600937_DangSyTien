@@ -23,10 +23,27 @@ def build_checkpointer(kind: str = "memory", database_url: str | None = None) ->
 
         return MemorySaver()
     if kind == "sqlite":
-        raise NotImplementedError(
-            "TODO(student): implement SQLite checkpointer. "
-            "Hint: pip install langgraph-checkpoint-sqlite, then use SqliteSaver"
-        )
+        try:
+            import os
+            import sqlite3
+            from langgraph.checkpoint.sqlite import SqliteSaver
+
+            db_path = database_url or ".checkpoints/state.db"
+            db_dir = os.path.dirname(db_path)
+            if db_dir:
+                os.makedirs(db_dir, exist_ok=True)
+
+            # Requires langgraph-checkpoint-sqlite v3.x pattern
+            conn = sqlite3.connect(db_path, check_same_thread=False)
+            # Optional: Enable WAL mode for better concurrency
+            conn.execute("PRAGMA journal_mode=WAL;")
+            
+            return SqliteSaver(conn=conn)
+        except ImportError as exc:
+            raise RuntimeError(
+                "SQLite checkpointer requires 'langgraph-checkpoint-sqlite'. "
+                "Please install it using: pip install langgraph-checkpoint-sqlite"
+            ) from exc
     if kind == "postgres":
         raise NotImplementedError(
             "TODO(student): implement Postgres checkpointer (optional extension)"

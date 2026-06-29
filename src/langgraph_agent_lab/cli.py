@@ -49,7 +49,17 @@ def validate_metrics(metrics: Annotated[Path, typer.Option("--metrics")]) -> Non
     report = MetricsReport.model_validate(payload)
     if report.total_scenarios < 6:
         raise typer.BadParameter("Expected at least 6 scenarios")
-    typer.echo(f"Metrics valid. success_rate={report.success_rate:.2%}")
+    typer.echo(f"Metrics valid. route_accuracy={report.route_accuracy:.2%}")
+
+
+@app.command("draw-diagram")
+def draw_diagram(output: Annotated[Path, typer.Option("--output")] = Path("outputs/diagram.mermaid")) -> None:
+    """Generate a Mermaid diagram of the LangGraph architecture."""
+    graph = build_graph()
+    mermaid_syntax = graph.get_graph().draw_mermaid()
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(mermaid_syntax, encoding="utf-8")
+    typer.echo(f"Wrote mermaid diagram to {output}")
 
 
 if __name__ == "__main__":
