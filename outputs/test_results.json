@@ -1,0 +1,62 @@
+[
+  {
+    "id": "gq_d10_01",
+    "question": "Theo chính sách hoàn tiền hiện hành, khách hàng có tối đa bao nhiêu ngày làm việc để gửi yêu cầu hoàn tiền sau khi đơn được xác nhận?",
+    "answer": "Could you please provide more details about your request?",
+    "passed": false
+  },
+  {
+    "id": "gq_d10_02",
+    "question": "Đâu là loại sản phẩm bị loại khỏi điều kiện hoàn tiền?",
+    "answer": "Could you please provide more details about your request?",
+    "passed": false
+  },
+  {
+    "id": "gq_d10_03",
+    "question": "Finance Team xử lý yêu cầu hoàn tiền trong bao lâu?",
+    "answer": "Could you please provide more details about your request?",
+    "passed": false
+  },
+  {
+    "id": "gq_d10_04",
+    "question": "SLA phản hồi ban đầu cho ticket P1 là bao lâu?",
+    "answer": "Could you please provide more details about your request?",
+    "passed": false
+  },
+  {
+    "id": "gq_d10_05",
+    "question": "SLA resolution cho ticket P1 là bao nhiêu giờ?",
+    "answer": "Could you please provide more details about your request?",
+    "passed": false
+  },
+  {
+    "id": "gq_d10_06",
+    "question": "Nếu không có phản hồi với ticket P1 sau bao lâu thì hệ thống auto escalate?",
+    "answer": "Could you please provide more details about your request?",
+    "passed": false
+  },
+  {
+    "id": "gq_d10_07",
+    "question": "Tài khoản bị khóa sau bao nhiêu lần đăng nhập sai liên tiếp?",
+    "answer": "Could you please provide more details about your request?",
+    "passed": false
+  },
+  {
+    "id": "gq_d10_08",
+    "question": "VPN cho phép kết nối tối đa bao nhiêu thiết bị cùng lúc?",
+    "answer": "Could you please provide more details about your request?",
+    "passed": false
+  },
+  {
+    "id": "gq_d10_09",
+    "question": "Nhân viên dưới 3 năm kinh nghiệm được bao nhiêu ngày phép năm theo chính sách HR 2026?",
+    "answer": "Could you please provide more details about your request?",
+    "passed": false
+  },
+  {
+    "id": "gq_d10_10",
+    "question": "Level 4 Admin Access yêu cầu phê duyệt bởi ai?",
+    "answer": "Could you please provide more details about your request?",
+    "passed": false
+  }
+]

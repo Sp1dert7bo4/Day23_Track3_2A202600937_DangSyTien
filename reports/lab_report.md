@@ -112,7 +112,7 @@ Hệ thống tích hợp `langgraph-checkpoint-sqlite` v3.x (`SqliteSaver`) đư
 - **Cạn kiệt Retry (Retry Exhaustion)**: Được kiểm chứng qua kịch bản `S07_dead_letter`. Nếu không có giới hạn, đồ thị sẽ lặp vô hạn giữa `tool_node` và `evaluate_node` làm treo hệ thống. Bộ lọc `route_after_evaluate` đã ngắt lặp thành công và chuyển về `dead_letter_node` đóng vai trò chốt chặn an toàn cốt lõi.
 - **Hành động rủi ro / HITL**: Các tác vụ có tính phá hủy (refund, delete) bắt buộc đi tắt qua tool tự động và rơi vào `risky_action_node`. Tại đây luồng đồ thị yêu cầu một token xác nhận rõ ràng (`approval`) trước khi chạy tiếp, giúp tránh việc thực thi API nguy hiểm ngoài ý muốn.
 
-## 12. Bonus Extension: Sơ đồ Kiến trúc (Graph Diagram)
+## 12. Bonus Extension 1: Sơ đồ Kiến trúc (Graph Diagram)
 - **Mục tiêu**: Cung cấp bằng chứng trực quan về topo (cấu trúc đồ thị) orchestration để tiện debug và làm tài liệu mà không cần trình xem graph bên thứ 3.
 - **File đã sửa**: `src/langgraph_agent_lab/cli.py` (Thêm `@app.command("draw-diagram")`)
 - **Cách chạy demo**: 
@@ -121,7 +121,19 @@ Hệ thống tích hợp `langgraph-checkpoint-sqlite` v3.x (`SqliteSaver`) đư
   ```
 - **Bằng chứng (Evidence)**: Lệnh này giải nén thành công object `StateGraph` và biên dịch ra cú pháp Mermaid, lưu tại `outputs/diagram.mermaid`. Đoạn mã này đã chứng minh mạch nối topology hoàn hảo từ `intake_node` đến tận `finalize_node`.
 
-## 13. Hướng dẫn chạy Demo (Demo Instructions)
+## 13. Bonus Extension 2: Quản lý Mã Nguồn & Tích hợp GitHub
+- **Mục tiêu**: Đảm bảo an toàn mã nguồn, theo dõi lịch sử thay đổi (version control) và sẵn sàng nộp bài (submission-ready) thông qua nền tảng GitHub.
+- **Chi tiết thực hiện**: 
+  - Toàn bộ source code, metrics, cấu hình và các file báo cáo (`lab_report.md`, `grading_report.html`) đều được tracking trên Git.
+  - Đã thực hiện commit toàn bộ những thay đổi hoàn chỉnh với thông điệp rõ ràng (`"Complete LangGraph Agent Lab: 100% route accuracy..."`).
+  - Đã push thành công nhánh `main` lên repository cá nhân trên GitHub.
+- **Bằng chứng (Evidence)**: Log push hoàn tất tại Terminal:
+  ```bash
+  To https://github.com/Sp1dert7bo4/Day23_Track3_2A202600937_DangSyTien.git
+     6d8252d..97ae78a  main -> main
+  ```
+
+## 14. Hướng dẫn chạy Demo (Demo Instructions)
 Chạy lần lượt các lệnh sau từ thư mục gốc của project:
 
 ```bash
@@ -138,7 +150,7 @@ python -m langgraph_agent_lab.cli validate-metrics --metrics outputs/metrics.jso
 python -m langgraph_agent_lab.cli draw-diagram
 ```
 
-## 14. Định hướng nâng cấp (Improvements)
+## 15. Định hướng nâng cấp (Improvements)
 - **Tool Hỗ Trợ Thực (Real support-ticket tools)**: Thay vì trả về chuỗi tĩnh, có thể kết nối Agent tới API của Jira/Zendesk thật qua biến môi trường.
 - **Giao diện Approval Thực (Real approval UI)**: Kết nối cờ `interrupt` của LangGraph với giao diện Streamlit/Gradio để thực sự dừng luồng hệ thống cho đến khi user bấm nút "Approve".
 - **Gọi Tool Song Song (Parallel Tool Calls)**: Cải tiến logic routing bằng cách trả về mảng lệnh gọi `Send()` (fan-out) khi câu hỏi cần nhiều tool hoạt động đồng thời.
